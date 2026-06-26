@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- favicon -->
+
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="index.html"><img src="" alt="Inicio"></a>
+            <ul class="enlaces">
+                <li class="enlace"><a href="index.html">VER</a></li>
+                <li class="enlace"><a href="get.html">GET</a></li>
+                <li class="enlace"><a href="post.html">POST</a></li>
+                <li class="enlace"><a href="delete.html">DELETE</a></li>
+                <li class="enlace"><a href="put.html">PUT</a></li>
+            </ul>
+        </div>
+    </header>
+    <main>
+        <section class="seccion-productos">
+            <h2>Nuestros productos</h2>
+            <div id="contenedor-productos">
+
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const contenedorProductos = document.getElementById('contenedor-productos')
+
+        const url = "http://localhost:3000/api/products"
+
+        async function obtenerProductos(){
+            try{
+                const response = await fetch(url)
+                // Clase 16 Optimizaciones
+                // Optimizacion 1 -> verificar si la respuesta HTTP fue exitosa
+                if(!response.ok){
+                    // Traemos message del 404
+                    const parsedResponse = await response.json()
+                    throw new Error(`Error del servidor ${parsedResponse.message}`)
+                }
+
+                // Optimizacion 2 -> destructuring directo
+                const {payload} = await response.json()
+                renderizarProductos(payload)
+
+            }catch(e){
+                console.error(e)
+                // Optimizacion 3 -> función que muestra los mensajes de error en párrafos
+                mostrarError(e)
+            }
+        }
+
+        function renderizarProductos(array){
+            let html = ""
+            array.forEach(producto => {
+                html += `
+                    <div class="card-producto">
+                        <img src="${producto.imagen}" alt="${producto.nombre}">
+                        <h4>${producto.nombre}</h4>
+                        <p>Id:${producto.id}</p>
+                        <p>Precio: ${producto.precio}</p>
+                    </div>
+                    <hr>
+                `
+            });
+            contenedorProductos.innerHTML = html
+        }
+
+        function mostrarError(errorMsg){
+            contenedorProductos.innerHTML = `
+                <p class="mensaje mensaje-error">${errorMsg}</p>
+            `;
+        }
+
+        obtenerProductos()
+    </script>
+
+</body>
+</html>
