@@ -3,7 +3,7 @@ import environments from "./src/api/config/environments.js"
 import connection from "./src/api/database/db.js"
 import cors from "cors"
 import { loggerURL} from "./src/api/middlewares/middlewares.js"
-import { productRoutes } from "./src/api/routes/index.js"
+import { productRoutes, viewRoutes } from "./src/api/routes/index.js"
 import { join,__dirname } from "./src/api/utils/index.js"
 
 
@@ -20,7 +20,11 @@ app.use(cors())
 // Importacion de middlewares
 app.use(loggerURL)
 
-app.use(express.static(join(__dirname,"src/plubic"))) // middleware para servir archivos estaticos
+app.use(express.static(join(__dirname,"src/public/"))) // middleware para servir archivos estaticos
+
+// Configuramos EJS como motor de plantillas
+app.set("view engine", "ejs")
+app.set("views", join(__dirname,"src/views"))
 
 // Optimizaciones en endpoints (Clase 16)
 // 1. Implementar manejo try/catch
@@ -29,15 +33,6 @@ app.use(express.static(join(__dirname,"src/plubic"))) // middleware para servir 
 // 4. En caso de no haber productos devolvemos un 404
 // 5. Indicar la cantidad de productos totales usando la longitud de [rows]
 
-/*
-/ ------------ ANTES DE LA OPTIMIZACION ------------- /
-
-app.get("/api/products", async (req,res) => {
-    const [rows] = await connection.query("SELECT * FROM campeonatos_prueba")
-    res.status(200).json({payload:rows})
-})
-*/
-
 app.get("/", (req,res) => {
     res.send("Hello World123")
 })
@@ -45,6 +40,7 @@ app.get("/", (req,res) => {
 // Rutas
 // app.use("/api/products", product.views.js)
 app.use("/api/products", productRoutes)
+app.use("/dashboard", viewRoutes) // rutas de vistas
 
 app.listen(PORT,() => {
     console.log(`Server corriendo es http://localhost:${PORT}`)

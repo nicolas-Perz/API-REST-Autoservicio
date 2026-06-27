@@ -5,6 +5,14 @@
 import productsModels from "../models/product.models.js"
 
 // GET ALL PRODUCTS
+/*
+/ ------------ ANTES DE LA OPTIMIZACION ------------- /
+
+app.get("/api/products", async (req,res) => {
+    const [rows] = await connection.query("SELECT * FROM campeonatos_prueba")
+    res.status(200).json({payload:rows})
+})
+*/
 export const getAllProducts = async (req,res) => {
     // Optimizacion 1
     try{
